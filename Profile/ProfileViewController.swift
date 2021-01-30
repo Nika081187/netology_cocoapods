@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import SnapKit
 
 @available(iOS 13.0, *)
 class ProfileViewController: UIViewController {
@@ -34,36 +35,6 @@ class ProfileViewController: UIViewController {
         super.init(coder: coder)
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        print(type(of: self), #function)
-    }
-    
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        print(type(of: self), #function)
-    }
-    
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        print(type(of: self), #function)
-    }
-    
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
-        print(type(of: self), #function)
-    }
-    
-    override func viewWillLayoutSubviews() {
-        super.viewWillLayoutSubviews()
-        print(type(of: self), #function)
-    }
-    
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        print(type(of: self), #function)
-    }
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -82,17 +53,16 @@ class ProfileViewController: UIViewController {
         view.addSubview(table)
         table.addSubview(avatarButton)
         
-        NSLayoutConstraint.activate([
-            table.topAnchor.constraint(equalTo: view.topAnchor),
-            table.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            table.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            table.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-            
-            avatarButton.heightAnchor.constraint(equalToConstant: 50),
-            avatarButton.widthAnchor.constraint(equalToConstant: 50),
-            avatarButton.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
-            avatarButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor)
-        ])
+        table.snp.makeConstraints { (make) -> Void in
+            make.edges.equalTo(view)
+        }
+        
+        avatarButton.snp.makeConstraints { (make) -> Void in
+            make.height.equalTo(50)
+            make.width.equalTo(50)
+            make.top.equalTo(view.safeAreaLayoutGuide)
+            make.right.equalTo(view.safeAreaLayoutGuide)
+        }
         
         let tapGestureRecognizer = UITapGestureRecognizer.init(target: self, action: #selector(tapAvatar))
         header.avatarImage.addGestureRecognizer(tapGestureRecognizer)
@@ -158,16 +128,17 @@ class ProfileViewController: UIViewController {
                 self.avatarButton.alpha = 0
                 self.avatarButton.isEnabled = false
             }
-        }) { (_) in
+        }) { [self] (_) in
 
         self.header.avatarImage.toAutoLayout()
-
-        NSLayoutConstraint.activate([
-            self.header.avatarImage.topAnchor.constraint(equalTo: self.header.topAnchor, constant: 16),
-            self.header.avatarImage.leadingAnchor.constraint(equalTo: self.header.leadingAnchor, constant: 16),
-            self.header.avatarImage.widthAnchor.constraint(equalToConstant: 100),
-            self.header.avatarImage.heightAnchor.constraint(equalToConstant: 100),
-        ])}
+            
+        self.header.avatarImage.snp.makeConstraints { (make) -> Void in
+            make.top.equalTo(header).offset(16)
+            make.left.equalTo(header).offset(16)
+            make.width.equalTo(100)
+            make.height.equalTo(100)
+            }
+        }
         table.sendSubviewToBack(avatarView)
         table.isScrollEnabled = true
         header.addSubview(header.avatarImage)
